@@ -1,0 +1,122 @@
+---
+title: "Untitled"
+author: "brouwern@gmail.com"
+date: "September 11, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Label each portion of the boxplot
+
+
+```{r}
+graph.name <- paste("boxplot",round(runif(1,1,10),0),".pdf",sep = "")
+pdf(graph.name)
+Y <- rnorm(100,10,2)
+Y[which.max(Y)] <- Y[which.max(Y)]*1.25
+library(ggplot2)
+
+Y.rnge <- range(Y)
+Y.rnge[1] <- Y.rnge[1]-Y.rnge[1]*0.25
+Y.rnge[2] <- Y.rnge[2]+Y.rnge[1]*0.25
+par(mar = c(1,2.5,4,1))
+boxplot(Y, ylim = Y.rnge,xlim = c(0.25,1.75), lwd = 2,cex = 2,pch =16)
+mtext("Name: ______________________________", line = 2)
+mtext("Label each portion of the boxplot")
+
+y.stats <- boxplot.stats(Y)
+
+whisker.x <- 1.15
+med.x <- 1.25
+outlier.x <- 1.1
+#lower whisker
+arrows(x1 = whisker.x,
+       length = 0.175, 
+       angle = 10,
+       lwd = 3,
+       x0 = 1.5,
+       y1 = y.stats$stats[1],
+       y0 = y.stats$stats[1])
+
+
+#upper whisker
+arrows(x1 = whisker.x,
+       length = 0.175, 
+       angle = 10,
+       lwd = 3,
+       x0 = 1.5,
+       y1 = y.stats$stats[5],
+       y0 = y.stats$stats[5])
+
+
+#median
+arrows(x1 = med.x,
+       length = 0.175, 
+       angle = 10,
+       lwd = 3,
+       x0 = 1.5,
+       y1 = y.stats$stats[3],
+       y0 = y.stats$stats[3])
+
+#lower quartile
+arrows(x1 = med.x,
+       length = 0.175, 
+       angle = 10,
+       lwd = 3,
+       x0 = 1.5,
+       y1 = y.stats$stats[2],
+       y0 = y.stats$stats[2])
+
+#upper quartile
+arrows(x1 = med.x,
+       length = 0.175, 
+       angle = 10,
+       lwd = 3,
+       x0 = 1.5,
+       y1 = y.stats$stats[4],
+       y0 = y.stats$stats[4])
+
+
+#interquartile range
+arrows(x1 = 0.775,
+       length = 0.175, 
+       angle = 10,
+       lwd = 3,
+       x0 = 0.65,
+       y1 = y.stats$stats[4],
+       y0 = y.stats$stats[3])
+arrows(x1 = 0.775,
+       length = 0.175, 
+       angle = 10,
+       lwd = 3,
+       x0 = 0.65,
+       y1 = y.stats$stats[2],
+       y0 = y.stats$stats[3])
+
+#outliers
+if(y.stats$out > 0){
+  
+  arrows(x1 = outlier.x,
+       length = 0.175, 
+       angle = 10,
+       lwd = 3,
+       x0 = 1.5,
+       y1 = max(y.stats$out),
+       y0 = max(y.stats$out))
+  
+  arrows(x1 = outlier.x,
+       length = 0.175, 
+       angle = 10,
+       lwd = 3,
+       x0 = 1.5,
+       y1 = min(y.stats$out),
+       y0 = min(y.stats$out))
+  
+}
+
+dev.off()
+```
+

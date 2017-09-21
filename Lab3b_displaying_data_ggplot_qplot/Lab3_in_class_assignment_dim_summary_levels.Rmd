@@ -1,0 +1,154 @@
+---
+title: 'Lab 3 In-class assignment: Data summaries'
+author: "brouwern@gmail.com"
+date: "September 11, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Fisher's Iris dataset
+
+Load it
+```{r}
+data(iris)
+```
+
+<br>
+
+## What "is" iris?
+
+There are several things listed, but "data.frame" is the important one
+```{r}
+is(iris)
+```
+
+<br>
+
+### How many rows?
+```{r}
+#with dim: 1st number is rows
+dim(iris)
+
+#with nrow
+nrow(iris)
+
+```
+
+<br>
+
+## How many columns
+```{r}
+#with dim: 2nd number is columns
+dim(iris)
+
+#with ncol
+ncol(iris)
+```
+
+<br>
+
+
+## How many rows are numeric?  How many are categorical/grouping?
+```{r}
+summary(iris)
+```
+
+<br>
+
+
+## What "is" the species column?
+```{r}
+is(iris$Species)
+```
+
+<br>
+
+## How many "levels" does this factor have?
+```{r}
+levels(iris$Species)
+```
+
+<br>
+
+## Mammal sleep data
+```{r}
+library(ggplot2)
+data(msleep)
+```
+
+<br>
+
+### What "is" msleep?
+
+Several things listed, but "data.frame" is the most important one.
+```{r}
+is(msleep)
+```
+
+<br>
+
+### How many rows?
+```{r}
+#with dim: 1st number is rows
+dim(msleep)
+
+#with ncrow
+nrow(msleep)
+
+```
+
+<br>
+
+### How many columns
+```{r}
+#with dim: 2nd number is columns
+dim(msleep)
+
+#with ncol()
+ncol(msleep)
+```
+
+<br>
+
+
+### How many rows are numeric?  How many are categorical/grouping?
+
+For some reason the categorical variabls are in "character" (aka text) form.  (Note: I'm just showing a few of the columns)
+```{r, results="hide"}
+summary(msleep)
+```
+
+```{r, echo=FALSE}
+summary(msleep)[,1:7]
+```
+
+### Make them explicitly categorical/factor
+```{r}
+msleep$genus <- factor(msleep$genus)
+msleep$vore <- factor(msleep$vore)
+msleep$order <- factor(msleep$order)
+msleep$conservation <- factor(msleep$conservation)
+```
+
+Look at summary again
+```{r, results="hide"}
+summary(msleep)
+```
+
+```{r, echo=FALSE}
+summary(msleep)[,1:4]
+```
+
+
+### Levels to genus variable
+
+Output not shown; there are 77!
+```{r, results="hide"}
+levels(msleep$genus)
+```
+
+
