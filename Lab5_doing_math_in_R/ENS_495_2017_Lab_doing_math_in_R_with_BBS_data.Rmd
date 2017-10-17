@@ -1,0 +1,527 @@
+---
+title: "Doing Basic Math for Stats in R"
+author: "Nathan L. Brouwer | brouwern@gmail.com"
+date: "September 2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width = 4, 
+                      fig.height = 2,
+                      warning = FALSE,
+                      message = FALSE)
+
+```
+
+## Doing Math in R
+
+* R can do everything a scientific calculator or spreadsheet can do.  * This includes basic functions like +, - , /, sqrt, etc, 
+* Also basic functions like mean(), median(), sd() for the standard deviation and var() for the variance.
+* In general in this course we will focus on having R do most of the calculations for our stats.  
+* However, it's important to understand some of the underlying math.
+* Today, to practice doing math in R and to learn about basic statsitcal functions, we'll do calculations  of the mean, variance, "sum of squares", and standard deviation "by hand" in R.  
+* We'll then compare them to the output R produces.
+
+
+## The USGS Breeding Bird Survey (BBS) data 
+
+Below are the number of species observed during a recent year of surveys on all routes in PA
+
+```{r, echo = F}
+#route number w/in PA
+route<- c(2,	3,	4,	5,	6,	8,	9,	10,	11,	12,	13,	14,	15,	16,	17,	18,	19,	20,	21,	23,	24,	25,	28,	29,	30,	31,	33,	34,	35,	36,	37,	39,	41,	42,	43,	46,	47,	48,	49,	50,	52,	53,	54,	56,	57,	58,	59,	61,	62,	63,	64,	67,	68,	69,	70,	71,	72,	76,	79,	83,	84,	85,	86,	88,	90,	91,	97,	107,	126,	127,	132,	151,	155,	165,	166,	173,	174,	177,	178,	180,	181,	182,	187,	189,	192,	193,	194,	195,	196,	275,	901,	902,	904,	905,	906,	907,	909,	910,	911)
+
+#Number of species on each route
+spp.rich	<-c(69,	58,	69,	65,	65,	61,	74,	57,	61,	61,	56,	40,	67,	56,	58,	69,	73,	59,	63,	51,	77,	71,	59,	77,	63,	64,	74,	74,	89,	60,	64,	71,	77,	78,	80,	62,	61,	67,	69,	69,	57,	58,	69,	64,	61,	61,	69,	68,	66,	57,	64,	67,	64,	67,	60,	63,	64,	58,	67,	63,	50,	60,	43,	73,	58,	56,	59,	70,	57,	48,	76,	56,	58,	75,	64,	59,	54,	64,	68,	67,	56,	41,	59,	63,	75,	69,	47,	53,	62,	48,	71,	59,	47,	39,	47,	67,	51,	44,	40)
+
+#make a dateframe
+dat <- data.frame(route = route,
+                  spp.rich = spp.rich)
+
+```
+
+
+
+## Distribution of species richness values
+
+The distribution of species richness values looks like this
+```{r, message=FALSE, warning=FALSE}
+
+library(ggplot2)
+qplot(spp.rich, 
+      dat = dat)
+
+```
+
+A nice package for making graphs with ggplot is ggpubr.  This lots of "dependencies" so you'll see lots of red text fly by and it will take a minute to download.
+
+
+
+```{r}
+#download the packages
+# install.packages("ggpubr")
+# install.packages("dplyr")
+
+library(ggpubr)
+```
+
+See http://www.sthda.com/english/rpkgs/ggpubr/ for more details on ggpubr.
+
+A basic ggpubr histogram using the function gghistogram(). (Ignore the red text about "bind = 30")
+```{r}
+gghistogram(data = dat,
+            x = "spp.rich")
+```
+
+
+Add the mean as a verticle line using the add = "mean" arguement
+```{r}
+gghistogram(data = dat,
+            x = "spp.rich",
+            add = "mean")
+```
+
+
+Change the "binwidth" 
+```{r}
+gghistogram(data = dat,
+            x = "spp.rich",
+            add = "mean",
+            binwidth = 5)
+```
+
+
+Add a "rug" on the bottom of the plot where each datapoint is exactly.
+```{r}
+gghistogram(data = dat,
+            x = "spp.rich",
+            add = "mean",
+            binwidth = 5,
+            rug = TRUE)
+```
+
+
+Add a color to fill the bars.
+```{r}
+gghistogram(data = dat,
+            x = "spp.rich",
+            add = "mean",
+            binwidth = 5,
+            fill = "orange",
+            rug = TRUE)
+```
+
+
+
+
+## Summary stats
+
+* All your basic stats.
+* Note meaninful for "route" b/c it is actually a categorical variable
+```{r}
+summary(dat)
+```
+
+## Accessing a column in a dataframe
+
+Look at just the spp.rich column using $spp.rich
+```{r}
+dat$spp.rich
+```
+
+
+
+## Basic math stuff in R
+
+
+### sum()
+
+The summed of the spp richness of all routes.  Not really meaninful on its own.
+```{r}
+sum(dat$spp.rich)
+```
+
+
+## The min, max, etc.
+```{r}
+
+min(dat$spp.rich)
+
+max(dat$spp.rich)
+
+```
+
+
+### Mean()
+
+The mean number of species observed per route.
+```{r}
+mean(dat$spp.rich)
+```
+
+
+## The varinace var()
+
+* On its own this value is hard to interpret.  But he larger the variance, the more variation there is between each route. 
+* If all the routes had the exact same number of species, var = 0.0
+
+```{r}
+var(dat$spp.rich)
+```
+
+
+## The standard deviation (sd)
+
+The standard deviation is a very common way to represent variability
+
+```{r}
+sd(dat$spp.rich)
+```
+
+
+## Variance vs. standard deviation
+
+* The standard deviation is just the square root of the of the variance.
+* We get the square root using sqrt()
+
+```{r}
+#SD using R's function
+sd(dat$spp.rich)
+
+#SD as the sqrt of the variance
+sqrt(var(dat$spp.rich))
+
+```
+
+
+## Doing math for stats "by hand""
+
+
+### Calculating the mean by hand
+
+*The numerator*
+```{r}
+my.sum <- sum(dat$spp.rich)
+```
+
+*The denomintor*
+
+Using the length() function to get the number of rows in the dataframe
+```{r}
+my.N <- length(dat$spp.rich)
+```
+
+**The mean**
+
+Doing division using "/"
+
+```{r}
+
+my.mean <- my.sum/my.N
+my.mean
+
+```
+
+**In one step**
+Same thing to get the mean, just in 1 step
+```{r}
+
+my.mean <- sum(dat$spp.rich)/length(dat$spp.rich)
+my.mean
+
+```
+
+
+**Checking our answer using == **
+We can check our answer like this using the "==" function which asks R "are these two objects EXACTLy the same?"
+
+```{r}
+my.mean == mean(dat$spp.rich)
+```
+
+
+We can do the same thing to check that the standard deviation is indeed the square root of the mean
+
+```{r}
+sd(dat$spp.rich) == sqrt(var(dat$spp.rich))
+```
+
+If the were not the same, R would say "FALSE"
+
+
+* Because R is very very very very precise any rounding errors will result in R saying that 2  things are NOT exactly the same.  Sometimes some R functions do  some rounding so you have to check "FALSE" answers sometimes.
+
+
+## Calcualting variance & standard deviation by hand, step by step
+
+* Variance and standard deviation are fundamental quantities in statistics.
+* We'll step through each part of their calculation
+
+### "Deviations" between the mean and each observation
+
+Calculate the difference between each observation and the mean of all observation that you calculated above.
+
+```{r}
+
+Yi.deviations <- dat$spp.rich-my.mean
+
+```
+
+
+
+### Start making a dataframe (df)
+
+* We can keep track of the math by making a spreadsheet-like object in R called a  dataframe using the data.frame command.  
+
+```{r}
+my.df <- data.frame(spp.rich = dat$spp.rich,
+               Yi.deviations)
+
+```
+
+
+Look at the matrix.  Note that some of the deviations are positive and some are negative.
+
+```{r}
+head(my.df)
+tail(my.df)
+```
+
+
+Look at a histogram of these values.  We won't focus on this now, but these values are called the "residuals"
+```{r}
+gghistogram(data = my.df,
+            x = "Yi.deviations")
+```
+
+
+
+
+## Calculate the"Squared deviations" between the mean and each observation
+
+Take your set of deviations and square them using "^2"
+
+Here, we've done math on a whole list of numbers at the same time.
+
+```{r}
+
+Yi.deviations.square <- Yi.deviations^2
+
+```
+
+
+* Squaring is key b/c it makes deviations greater than the mean and less than the mean to have the same magnitude  
+* That is, we go from "deviations" that are positive and negative to "squared deviations" that are all positive  
+
+
+## Add the square deviations to the dataframe
+
+
+* We can add stuff to our dataframe using the function cbind()
+* cbind() stands for "column bind"
+
+```{r}
+
+my.df <- cbind(my.df, Yi.deviations.square)
+
+```
+
+Look at your expanding matrix
+
+```{r}
+head(my.df)
+```
+
+
+## Sum of squares between the mean & each deviation
+
+* we can now calcualte the "sum of square deviations" 
+* AKA the "sum of squares" (SS)
+* This is the numerator (the thing on top) in the variance & standard deviation equations.*
+* This is an important intermediary step in the process
+
+```{r}
+
+my.sum.of.squares<- sum(Yi.deviations.square)
+
+
+```
+
+
+This is a rather big number and I'm glad we don't have to calcualte it by hand : )
+
+```{r}
+
+my.sum.of.squares
+
+```
+
+
+## And now...the variance (var)
+
+* We can now use the sum of squares(SS) to calcuate the variance. 
+* This is is the SS divided by the sample size minus one. 
+* That is SS/(n-1)
+* Recall that we calcualted the sample size (N) above and put it in an object called "my.N".  
+* We subtract 1 from N to get what is known as the "Degrees of freedom" (DF).  More on this later...
+
+**Equation for the variance**
+\[\sigma^2 = {\frac{\sum\limits_{i=1}^{n} \left(x_{i} - \bar{x}\right)^{2}} {n-1}}\]
+
+
+
+```{r}
+#The sample size
+my.N
+
+#degrees of freedom
+dfs <- my.N - 1
+
+#The var
+my.var <- my.sum.of.squares/dfs
+
+#Could also do it more directly
+my.var <- my.sum.of.squares/(my.N - 1)
+
+
+```
+
+
+Check our var vs. R's var
+
+```{r}
+my.var == var(dat$spp.rich)
+```
+
+Got it!
+
+
+## And now...the standard deviation (SD)
+
+* The standard deviation is just the square root of the variance.
+* We get the square root using the sqrt() function
+
+
+**Equation for Standard Deviation**
+Where x = a column of data in a dataframe
+\[\sigma = \sqrt{\frac{\sum\limits_{i=1}^{n} \left(x_{i} - \bar{x}\right)^{2}} {n-1}}\]
+
+
+**R-ish notation for SE**
+\[SD = \sqrt{var(x)}\]
+
+
+```{r}
+
+my.sd <- sqrt(my.var)
+
+```
+
+
+We can check if our results are the same as R
+
+```{r}
+#Variance
+var(dat$spp.rich)
+my.var
+
+#stdev
+sd(dat$spp.rich)
+my.sd
+
+```
+
+
+We can check this also like this usig "=="
+
+```{r}
+
+#stdev
+sd(dat$spp.rich) == my.sd
+```
+
+## The standard error (SE)
+
+
+* The standard error (SE) is a fundamental quantity in stats.  
+* It is used as a measure of the precision of the data
+* It is closely related to the concept of a 95% confidence interval (CI)
+* Is is calculated the standard deviation divided by the square root of the sample size.
+
+**Equation for Standard error (SE)**
+Where x = a column of data in a dataframe
+\[SE = \frac{SD}{\sqrt{N}}\]
+
+**R-ish notation for SE**
+\[SE = \frac{SD(x)}{sqrt(length(x))}\]
+
+
+```{r}
+
+my.se <- my.sd/sqrt(my.N)
+
+```
+
+
+
+
+## Calculating the SE directly
+
+* For some reason the basic R set up doesn't have a function for the SE.
+* There is a function for the SE, std.error, in the package plotrix
+
+```{r}
+#Download plotrix
+# install.packages("plotrix")
+library(plotrix)
+
+std.error(dat$spp.rich)
+
+```
+
+
+## Advanced Pro trick: write your own function
+
+* If there wasn't a function in for the SE, you could write your own like this.
+* This is an advanced topic and is only shown for those who are curious.
+
+```{r}
+#with all the math
+my.se.fnxn <- function(x){sqrt(var(x))/sqrt(length(x))}
+
+#with less  math
+my.se.fnxn <- function(x){sd(x)/sqrt(length(x))}
+
+
+my.se.fnxn(dat$spp.rich)
+```
+
+
+## 95% Confidence intervals (95% CIs)
+
+* The standard error is related closely to the 95% Confidence interval
+* There are precise equations for calculating 95% CIs for different circumstances
+* Roughtly, a 95% CIs extend on either side of the mean to indicate a plausible range of values the should contain the real value you are trying to estimate with your eamn
+* As an approximatation, 95% CI is mean +/- 1.98*SE
+* The upper bound of the CI is mean +  1.98*SE
+* The lower bound of the CI is mean -  1.98*SE
+
+```{r}
+my.CI.upper <- my.mean + my.se*1.96
+```
+
+
+
+
+
+
+## Background info
+
+https://www.r-bloggers.com/standard-deviation-vs-standard-error/
+
+
+
+
