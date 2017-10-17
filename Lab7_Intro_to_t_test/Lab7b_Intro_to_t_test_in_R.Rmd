@@ -1,0 +1,86 @@
+---
+title: 'Introduction to the to t-test: t-test'
+author: "Nathan Brouwer | brouwern@gmail.com | @lobrowR"
+date: "September 29017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width = 4, 
+                      fig.height = 2,
+                      warning = FALSE,
+                      message = FALSE)
+#set rounding
+options(digits = 4)
+
+#set updata
+brook.trout.PRES.ABS <- c(rep("present",6,),rep("absent",6))
+
+salmon.released <- c(820,
+                     960,700,545,769,1001,467,959,1029,27,998,936)
+salmon.surv <- c(166,136,153,103,173,188,180,178,326,7,120,135)
+salmon <- data.frame(brook.trout.PRES.ABS,
+                     salmon.released,
+                     salmon.surv)
+percent.surv <-salmon$salmon.surv/salmon$salmon.released
+salmon$percent.surv <- percent.surv
+
+library(ggplot2)
+library(ggpubr)
+library(dplyr)
+
+```
+
+
+## Conducting a 2-sample t-test
+
+* We'll use the main salmon dataframe we plotted previously.  
+* All t-tests in R are done using the t.test function
+* There are unfortunately a few different ways to can get t.test to run things for you; you might see some variation dependong on what resources you are looking at
+* We'll do what is probalby the most common way, using the tilda formula notation
+* This is: "response.variable ~ predictor.variable"
+* Note we have to include "data = salmon" so R knows where to find the reponse and predictor variables
+
+```{r}
+t.test(percent.surv ~ brook.trout.PRES.ABS, 
+       data = salmon)
+```
+
+
+## Saving output of t-test
+
+We can save the output of a t test into an R object
+
+```{r, echo = F}
+t.out <- t.test(percent.surv ~ brook.trout.PRES.ABS, 
+       data = salmon)
+```
+
+
+```{r, include=FALSE}
+mean1 <- t.out$estimate[1]
+mean2 <- t.out$estimate[2]
+```
+
+## Examining Output of a t-test
+
+* Examine the output of the t-test.  Idetinfy the following thigns
+* The t-statistics
+* degrees of freedom (df)
+* p-value
+
+
+Note that the output reports an interesting thing, a **95% confidence interval.**
+
+Specifically, this is the **95% for the difference between the two mean values.**  The means are `r mean1` and  `r mean2`, and their difference is `r mean1 - mean2`.  
+
+The **null hypothesis (Ho)** is that the **difference between the 2 means**  is essentially equal to zero.  `r mean1 - mean2` is close to zero, and we use the t-test and confidence intervals to determine if a difference of `r mean1 - mean2` could just result from random sampling error.
+
+
+
+
